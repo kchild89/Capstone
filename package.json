@@ -4,10 +4,11 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "cd server && npm i && cd ../client && npm i && npm run build",
     "start": "node server/server.js",
     "dev": "next dev -p 3000",
     "server": "node server/server.js",
-    "build": "next build",
+    "client": "cd client && npm run dev",
     "start:prod": "next start -p 3000"
   },
   "keywords": [],
