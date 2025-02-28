@@ -1,6 +1,6 @@
 "use client";
-import { Routing } from "@/utils/backend routes"
+import { apiRouter } from "@/utils/apiRouter"
 
 export const TestComponent = () => {
-  return <button onClick={() => {Routing.fetchApi()}}>test fetch api</button>
+  return <button onClick={() => {apiRouter}}>test fetch api</button>
 }
