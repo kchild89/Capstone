@@ -3,20 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "npm install && cd server && npm install && cd ../client && npm install && npm run build",
-    "start": "node server/server.js",
-    "dev": "cd client && npm run dev",
+    "dev": "npm --prefix client run dev",
     "server": "node server/server.js",
-    "client": "cd client && npm run dev",
-    "start:prod": "next start -p 3000"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
-  "engines": {
-    "node": "23.7.0"
+    "build": "npm --prefix client run build",
+    "start": "npm run server & npm --prefix client run start"
   },
   "dependencies": {
     "cors": "^2.8.5",
