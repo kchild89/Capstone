@@ -5,7 +5,7 @@ class ApiRouter {
       const serverUrl =
         process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/${path}`,
+        `${serverUrl}/api/${path}`,
         {
           method,
           headers: {
