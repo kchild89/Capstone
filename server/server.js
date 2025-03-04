@@ -69,6 +69,28 @@ async function copyCSVToDB() {
   }
 }
 copyCSVToDB();
+async function createUsersTable() {
+  const usersTableQuery = `
+      CREATE TABLE IF NOT EXISTS users (
+          id SERIAL PRIMARY KEY,
+          username VARCHAR(50) UNIQUE NOT NULL,
+          email VARCHAR(100) UNIQUE NOT NULL,
+          password TEXT NOT NULL,
+          firstName VARCHAR(50) NOT NULL,
+          lastName VARCHAR(50) NOT NULL,
+          phone VARCHAR(20),
+          address TEXT
+      );
+  `;
+
+  try {
+    await pool.query(usersTableQuery);
+    console.log("Users table ensured.");
+  } catch (err) {
+    console.error("Error creating users table:", err);
+  }
+}
+createUsersTable();
 
 const app = express();
 
@@ -88,6 +110,50 @@ app.get("/api", (req, res) => {
 
 app.get("/", (req, res) => {
   res.json({ message: "test test test test" });
+});
+
+app.post("/api/login", async (req, res) => {
+  const { username, password } = req.body;
+
+  // Function to find user by username
+  async function findUserByUsername(username) {
+    try {
+      const result = await pool.query(
+        "SELECT * FROM users WHERE username = $1",
+        [username]
+      );
+      return result.rows[0]; // Return the user object
+    } catch (err) {
+      console.error("Error fetching user from database", err);
+      return null;
+    }
+  }
+
+  // Find user from database
+  const user = await findUserByUsername(username);
+  if (!user) {
+    return res.status(400).json({ msg: "Invalid credentials" });
+  }
+
+  // Compare passwords using bcrypt
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    return res.status(400).json({ msg: "Invalid credentials" });
+  }
+
+  // Generate JWT token
+  const payload = {
+    userId: user.id, // or whatever your user identifier is
+    username: user.username,
+  };
+
+  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" }); // Token expires in 1 hour
+
+  // Send the token to the client
+  res.json({
+    msg: "Login successful",
+    token: token,
+  });
 });
 
 // Test DB Connection
