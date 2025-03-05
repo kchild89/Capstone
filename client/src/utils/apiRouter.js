@@ -14,9 +14,15 @@ class ApiRouter {
       });
 
       if (!response.ok) {
-        throw new Error(
-          `Request failed: ${response.status} ${response.statusText}`
+        console.error(
+          "there was an error\n",
+          response.status,
+          "\n",
+          response.statusText
         );
+        // throw new Error(
+        //   `Request failed: ${response.status} ${response.statusText}`
+        // );
       }
 
       return response;
