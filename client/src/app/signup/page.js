@@ -39,6 +39,7 @@ export default function SignUpPage() {
         const data = await res.json();
         setError(data.message || "Sign Up Failed");
       } else {
+        // Redirect after successful sign-up to the login page
         router.push("/login");
       }
     } catch (err) {
@@ -55,7 +56,7 @@ export default function SignUpPage() {
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block mb-1 font-medium text-gray-700">
-              Email
+              Email <span className="text-red-500">*</span>
             </label>
             <input
               type="email"
@@ -68,7 +69,7 @@ export default function SignUpPage() {
 
           <div className="mb-4">
             <label className="block mb-1 font-medium text-gray-700">
-              Password
+              Password <span className="text-red-500">*</span>
             </label>
             <input
               type="password"
@@ -81,7 +82,7 @@ export default function SignUpPage() {
 
           <div className="mb-4">
             <label className="block mb-1 font-medium text-gray-700">
-              First Name
+              First Name <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -94,7 +95,7 @@ export default function SignUpPage() {
 
           <div className="mb-4">
             <label className="block mb-1 font-medium text-gray-700">
-              Last Name
+              Last Name <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -126,6 +127,10 @@ export default function SignUpPage() {
               value={address}
               onChange={(e) => setAddress(e.target.value)}
             />
+          </div>
+
+          <div className="text-xs text-gray-600 mb-4">
+            <span className="text-red-500">*</span> Required
           </div>
 
           <button
