@@ -4,7 +4,9 @@ const express = require("express");
 const path = require("path");
 const cors = require("cors");
 require("dotenv").config();
+const bcrypt = require("bcrypt");
 const { Pool } = require("pg");
+const jwt = require("jsonwebtoken");
 
 const pool = new Pool({
   connectionString: process.env.RENDER
@@ -21,6 +23,7 @@ const fs = require("fs");
 const { pipeline } = require("stream");
 const copyFrom = require("pg-copy-streams").from;
 
+// move these functions to different files
 async function copyCSVToDB() {
   const client = await pool.connect();
   try {
@@ -73,11 +76,11 @@ async function createUsersTable() {
   const usersTableQuery = `
       CREATE TABLE IF NOT EXISTS users (
           id SERIAL PRIMARY KEY,
-          username VARCHAR(50) UNIQUE NOT NULL,
+          username VARCHAR(50),
           email VARCHAR(100) UNIQUE NOT NULL,
           password TEXT NOT NULL,
-          firstName VARCHAR(50) NOT NULL,
-          lastName VARCHAR(50) NOT NULL,
+          firstName VARCHAR(50),
+          lastName VARCHAR(50),
           phone VARCHAR(20),
           address TEXT
       );
@@ -113,15 +116,14 @@ app.get("/", (req, res) => {
 });
 
 app.post("/api/login", async (req, res) => {
-  const { username, password } = req.body;
+  const { email, password } = req.body;
 
-  // Function to find user by username
-  async function findUserByUsername(username) {
+  // Function to find user by email
+  async function findUserByEmail(email) {
     try {
-      const result = await pool.query(
-        "SELECT * FROM users WHERE username = $1",
-        [username]
-      );
+      const result = await pool.query("SELECT * FROM users WHERE email = $1", [
+        email,
+      ]);
       return result.rows[0]; // Return the user object
     } catch (err) {
       console.error("Error fetching user from database", err);
@@ -129,13 +131,42 @@ app.post("/api/login", async (req, res) => {
     }
   }
 
-  // Find user from database
-  const user = await findUserByUsername(username);
-  if (!user) {
-    return res.status(400).json({ msg: "Invalid credentials" });
+  // Function to create a new user (only email and password are required)
+  async function createUser(email, password) {
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    function getUsernameFromEmail(email) {
+      if (!email) return null; // Prevents errors if email is undefined
+      const match = email.match(/^([^@]+)/);
+      return match ? match[1] : null;
+    }
+
+    const username = getUsernameFromEmail(email);
+    const query = `
+    INSERT INTO users (email, password, username)
+    VALUES ($1, $2, $3)
+    RETURNING *;
+    `;
+    try {
+      const result = await pool.query(query, [email, hashedPassword, username]);
+      console.log("User created:", result.rows[0]);
+      return result.rows[0];
+    } catch (err) {
+      console.error("Error creating user:", err);
+      throw new Error("Error creating user");
+    }
   }
 
-  // Compare passwords using bcrypt
+  // Find user from database using email
+  let user = await findUserByEmail(email);
+
+  // If user doesn't exist, create the user
+  if (!user) {
+    console.log("User not found, creating new user...");
+    user = await createUser(email, password);
+  }
+
+  // Compare passwords using bcrypt (for both new and existing users)
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
     return res.status(400).json({ msg: "Invalid credentials" });
@@ -144,14 +175,15 @@ app.post("/api/login", async (req, res) => {
   // Generate JWT token
   const payload = {
     userId: user.id, // or whatever your user identifier is
-    username: user.username,
+    email: user.email, // Use email instead of username
   };
 
   const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" }); // Token expires in 1 hour
 
   // Send the token to the client
+  console.log("successful login");
   res.json({
-    msg: "Login successful",
+    msg: user ? "Login successful" : "User created and logged in",
     token: token,
   });
 });
