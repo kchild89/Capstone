@@ -4,17 +4,14 @@ class ApiRouter {
     try {
       const serverUrl =
         process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-      const response = await fetch(
-        `${serverUrl}/api/${path}`,
-        {
-          method,
-          headers: {
-            "Content-Type": "application/json",
-            ...(token && { Authorization: `Bearer ${token}` }), // Add token if provided
-          },
-          body: data ? JSON.stringify(data) : null,
-        }
-      );
+      const response = await fetch(`${serverUrl}/api/${path}`, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` }), // Add token if provided
+        },
+        body: data ? JSON.stringify(data) : null,
+      });
 
       if (!response.ok) {
         throw new Error(
@@ -22,7 +19,7 @@ class ApiRouter {
         );
       }
 
-      return await response.json(); // Assuming response is JSON
+      return response;
     } catch (error) {
       console.error(`fetch${method} error:`, error);
       return null;
