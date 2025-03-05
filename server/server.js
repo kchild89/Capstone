@@ -76,11 +76,11 @@ async function createUsersTable() {
   const usersTableQuery = `
       CREATE TABLE IF NOT EXISTS users (
           id SERIAL PRIMARY KEY,
-          username VARCHAR(50),
+          username VARCHAR(50) NOT NULL,
           email VARCHAR(100) UNIQUE NOT NULL,
           password TEXT NOT NULL,
-          firstName VARCHAR(50),
-          lastName VARCHAR(50),
+          firstName VARCHAR(50) NOT NULL,
+          lastName VARCHAR(50) NOT NULL,
           phone VARCHAR(20),
           address TEXT
       );
@@ -131,45 +131,20 @@ app.post("/api/login", async (req, res) => {
     }
   }
 
-  // Function to create a new user (only email and password are required)
-  async function createUser(email, password) {
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    function getUsernameFromEmail(email) {
-      if (!email) return null; // Prevents errors if email is undefined
-      const match = email.match(/^([^@]+)/);
-      return match ? match[1] : null;
-    }
-
-    const username = getUsernameFromEmail(email);
-    const query = `
-    INSERT INTO users (email, password, username)
-    VALUES ($1, $2, $3)
-    RETURNING *;
-    `;
-    try {
-      const result = await pool.query(query, [email, hashedPassword, username]);
-      console.log("User created:", result.rows[0]);
-      return result.rows[0];
-    } catch (err) {
-      console.error("Error creating user:", err);
-      throw new Error("Error creating user");
-    }
-  }
-
   // Find user from database using email
   let user = await findUserByEmail(email);
 
-  // If user doesn't exist, create the user
+  // If user doesn't exist, return message saying so
   if (!user) {
-    console.log("User not found, creating new user...");
-    user = await createUser(email, password);
+    console.log("user not found");
+    res.json({ message: "user not found" });
+    return;
   }
 
   // Compare passwords using bcrypt (for both new and existing users)
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
-    return res.status(400).json({ msg: "Invalid credentials" });
+    return res.status(400).json({ message: "Invalid credentials" });
   }
 
   // Generate JWT token
@@ -183,8 +158,90 @@ app.post("/api/login", async (req, res) => {
   // Send the token to the client
   console.log("successful login");
   res.json({
-    msg: user ? "Login successful" : "User created and logged in",
+    message: "Login successful",
     token: token,
+  });
+});
+
+app.post("/api/signup", async (req, res) => {
+  const { email, password, username, firstName, lastName, phone, address } =
+    req.body;
+  // phone and address are optional
+  // Function to find user by email
+  async function findUserByEmail(email) {
+    try {
+      const result = await pool.query("SELECT * FROM users WHERE email = $1", [
+        email,
+      ]);
+      return result.rows[0]; // Return the user object
+    } catch (err) {
+      console.error("Error fetching user from database", err);
+      return null;
+    }
+  }
+
+  // Function to create a new user (only email and password are required)
+  async function createUser(
+    email,
+    password,
+    username,
+    firstName,
+    lastName,
+    phone = null,
+    address = null
+  ) {
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const query = `
+    INSERT INTO users (email, password, username, firstName, lastName, phone, address)
+    VALUES ($1, $2, $3, $4, $5, $6, $7)
+    RETURNING *;
+    `;
+    try {
+      const result = await pool.query(query, [
+        email,
+        hashedPassword,
+        username,
+        firstName,
+        lastName,
+        phone,
+        address,
+      ]);
+      console.log("User created:", result.rows[0]);
+      return result.rows[0];
+    } catch (err) {
+      console.error("Error creating user:", err);
+      throw new Error("Error creating user");
+    }
+  }
+
+  // Find user from database using email
+  let user = await findUserByEmail(email);
+  // If user doesn't exist, create the user
+  if (!user) {
+    console.log("creating new user");
+    user = await createUser(
+      email,
+      password,
+      username,
+      firstName,
+      lastName,
+      phone,
+      address
+    );
+  } else {
+    console.log("user already exists");
+    res.status(409).json({ message: "user with this email already exists" });
+    return;
+  }
+
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    return res.status(400).json({ message: "Invalid credentials" });
+  }
+
+  res.json({
+    message: "user created probably",
   });
 });
 
