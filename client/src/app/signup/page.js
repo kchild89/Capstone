@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { apiRouter } from "@/utils/apiRouter";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -21,19 +22,29 @@ export default function SignUpPage() {
     const username = email.split("@")[0];
 
     try {
-      const res = await fetch("/api/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username,
-          email,
-          password,
-          firstName,
-          lastName,
-          phone,
-          address,
-        }),
-      });
+      const input = {
+        username,
+        email,
+        password,
+        firstName,
+        lastName,
+        phone,
+        address,
+      };
+      const res = await apiRouter.fetchPost("signup", input);
+      // const res = await fetch("/api/signup", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify({
+      //     username,
+      //     email,
+      //     password,
+      //     firstName,
+      //     lastName,
+      //     phone,
+      //     address,
+      //   }),
+      // });
 
       if (!res.ok) {
         const data = await res.json();
