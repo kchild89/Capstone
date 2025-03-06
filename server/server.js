@@ -7,6 +7,8 @@ require("dotenv").config();
 const bcrypt = require("bcrypt");
 const { Pool } = require("pg");
 const jwt = require("jsonwebtoken");
+const { expressjwt: expressjwt } = require("express-jwt");
+const cookieParser = require("cookie-parser");
 
 const pool = new Pool({
   connectionString: process.env.RENDER
@@ -103,8 +105,25 @@ app.use(express.static(path.resolve(__dirname, "../client/dist")));
 // allow json stuff
 app.use(express.json());
 
+// configure cors
+const corsOptions = {
+  origin: process.env.FRONTEND_URL,
+  credentials: true,
+};
 // allow cross origin resource sharing
-app.use(cors());
+app.use(cors(corsOptions));
+
+// allow reading cookies
+app.use(cookieParser());
+
+// verify jwts on all pages except whitelisted ones
+app.use(
+  expressjwt({
+    secret: process.env.JWT_SECRET,
+    algorithms: ["HS256"],
+    getToken: (req) => req.cookies.token,
+  }).unless({ path: ["/api/login", "/api/signup"] })
+);
 
 // Handle GET requests to /api route
 app.get("/api", (req, res) => {
@@ -153,7 +172,10 @@ app.post("/api/login", async (req, res) => {
     email: user.email, // Use email instead of username
   };
 
-  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" }); // Token expires in 1 hour
+  const token = jwt.sign(payload, process.env.JWT_SECRET, {
+    expiresIn: "1h",
+    algorithm: "HS256",
+  }); // Token expires in 1 hour
 
   // Send the token to the client
   res.cookie("token", token, {
@@ -252,7 +274,7 @@ app.post("/api/signup", async (req, res) => {
 });
 
 // Test DB Connection
-app.get("/api/test-db", async (req, res) => {
+app.get("/api/protected/test-db", async (req, res) => {
   try {
     const result = await pool.query("SELECT NOW()");
     res.json({ message: "Connected to DB!", time: result.rows[0].now });
