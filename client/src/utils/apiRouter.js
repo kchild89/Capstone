@@ -5,7 +5,7 @@ class ApiRouter {
       const serverUrl =
         process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
       const credentialType = token ? "include" : "omit";
-
+      
       const response = await fetch(`${serverUrl}/api/${path}`, {
         method,
         credentials: credentialType,
