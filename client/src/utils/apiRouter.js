@@ -1,14 +1,16 @@
 class ApiRouter {
   constructor() {}
-  fetchRequest = async (method, path, data = null, token = null) => {
+  fetchRequest = async (method, path, data = null, token = false) => {
     try {
       const serverUrl =
         process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+      const credentialType = token ? "include" : "omit";
+
       const response = await fetch(`${serverUrl}/api/${path}`, {
         method,
+        credentials: credentialType,
         headers: {
           "Content-Type": "application/json",
-          ...(token && { Authorization: `Bearer ${token}` }), // Add token if provided
         },
         body: data ? JSON.stringify(data) : null,
       });
@@ -20,6 +22,7 @@ class ApiRouter {
           "\n",
           response.statusText
         );
+        // commented bc it sends response to wherever it's sent
         // throw new Error(
         //   `Request failed: ${response.status} ${response.statusText}`
         // );
@@ -31,24 +34,24 @@ class ApiRouter {
       return null;
     }
   };
-  fetchPost = async (path, data, token = null) => {
-    return await this.fetchRequest("POST", path, data, token);
+  fetchPost = async (path, data) => {
+    return await this.fetchRequest("POST", path, data, true);
   };
 
-  fetchPut = async (path, data, token) => {
-    return await this.fetchRequest("PUT", path, data, token);
+  fetchPut = async (path, data) => {
+    return await this.fetchRequest("PUT", path, data, true);
   };
 
-  fetchDelete = async (path, token) => {
-    return await this.fetchRequest("DELETE", path, null, token);
+  fetchDelete = async (path) => {
+    return await this.fetchRequest("DELETE", path, null, true);
   };
 
   fetchGet = async (path) => {
-    return await this.fetchRequest("GET", path);
+    return await this.fetchRequest("GET", path, null);
   };
 
   fetchGetAuth = async (path, token) => {
-    return await this.fetchRequest("GET", path, null, token);
+    return await this.fetchRequest("GET", path, null, true);
   };
 }
 export const apiRouter = new ApiRouter();
