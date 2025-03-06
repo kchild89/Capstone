@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { apiRouter } from "@/utils/apiRouter";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -12,14 +13,16 @@ export default function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+    // const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
     try {
-      const res = await fetch(`${apiUrl}/api/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+      const input = { email, password };
+      const res = await apiRouter.fetchPost("login", input);
+      // const res = await fetch(`${apiUrl}/api/login`, {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify({ email, password }),
+      // });
 
       if (!res.ok) {
         const data = await res.json();
