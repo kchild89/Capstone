@@ -73,10 +73,7 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
-              {/* Eye icon placeholder (not functional) */}
-              <div className="absolute right-3 top-2 text-gray-400 cursor-pointer">
-                👁️
-              </div>
+              <div className="absolute right-3 top-2 text-gray-400 cursor-pointer"></div>
             </div>
           </div>
 
