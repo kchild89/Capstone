@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -38,7 +39,7 @@ export default function LoginPage() {
       <div className="bg-white w-full max-w-sm rounded-lg shadow-md p-8">
         <h1 className="text-2xl font-bold text-center mb-4">Welcome</h1>
 
-        {/* Placeholder icon (swap out if you have an actual image/icon) */}
+        {/* Placeholder icon */}
         <div className="flex justify-center mb-8">
           <div className="bg-gray-200 h-16 w-16 flex items-center justify-center rounded-full">
             <span className="text-2xl font-bold">A</span>
@@ -79,11 +80,7 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            className="w-full py-2 rounded text-white font-semibold
-              bg-gradient-to-r from-blue-500 to-cyan-500
-              hover:from-blue-600 hover:to-cyan-600
-              focus:outline-none focus:ring-2 focus:ring-blue-300
-              transition-colors"
+            className="w-full py-2 rounded text-white font-semibold bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-colors"
           >
             LOGIN
           </button>
@@ -91,9 +88,9 @@ export default function LoginPage() {
 
         <div className="text-center mt-6 text-gray-600">
           Don&apos;t have an account?{" "}
-          <a href="#" className="text-blue-500 hover:underline">
+          <Link href="/signup" className="text-blue-500 hover:underline">
             Sign Up
-          </a>
+          </Link>
         </div>
       </div>
     </div>
