@@ -156,10 +156,16 @@ app.post("/api/login", async (req, res) => {
   const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" }); // Token expires in 1 hour
 
   // Send the token to the client
+  res.cookie("token", token, {
+    httpOnly: true, // Prevents JavaScript access
+    secure: true, // Only send over HTTPS
+    sameSite: "Strict", // Prevent CSRF (can be 'Lax' or 'None' for cross-site)
+    maxAge: 24 * 60 * 60 * 1000, // 1 day
+  });
+
   console.log("successful login");
   res.json({
     message: "Login successful",
-    token: token,
   });
 });
 
