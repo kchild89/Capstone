@@ -34,7 +34,9 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4">
       <div className="bg-white w-full max-w-sm rounded-lg shadow-md p-8">
-        <h1 className="text-2xl font-bold text-center mb-4">Welcome</h1>
+        <h1 className="text-2xl text-black font-bold text-center mb-4">
+          Welcome
+        </h1>
 
         {/* Placeholder icon */}
         <div className="flex justify-center mb-8">
