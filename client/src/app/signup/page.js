@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiRouter } from "@/utils/apiRouter";
+import Link from "next/link";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -32,19 +33,6 @@ export default function SignUpPage() {
         address,
       };
       const res = await apiRouter.fetchPost("signup", input);
-      // const res = await fetch("/api/signup", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({
-      //     username,
-      //     email,
-      //     password,
-      //     firstName,
-      //     lastName,
-      //     phone,
-      //     address,
-      //   }),
-      // });
 
       if (!res.ok) {
         const data = await res.json();
@@ -151,6 +139,12 @@ export default function SignUpPage() {
             Sign Up
           </button>
         </form>
+        <div className="text-center mt-6 text-gray-600">
+          Already have an account?{" "}
+          <Link href="/login" className="text-blue-500 hover:underline">
+            Log in
+          </Link>
+        </div>
       </div>
     </div>
   );
