@@ -9,12 +9,13 @@ const { Pool } = require("pg");
 const jwt = require("jsonwebtoken");
 const { expressjwt: expressjwt } = require("express-jwt");
 const cookieParser = require("cookie-parser");
+require("dotenv").config();
 
 const pool = new Pool({
   connectionString: process.env.RENDER
     ? process.env.DATABASE_URL_INTERNAL
     : process.env.DATABASE_URL || process.env.DATABASE_URL_EXTERNAL,
-  ssl: { rejectUnauthorized: false },
+  ssl: process.env.RENDER ? { rejectUnauthorized: false } : false, // Disable SSL locally
 });
 
 const PORT = process.env.PORT || 3001;
