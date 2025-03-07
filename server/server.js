@@ -13,10 +13,8 @@ const cookieParser = require("cookie-parser");
 const pool = new Pool({
   connectionString: process.env.RENDER
     ? process.env.DATABASE_URL_INTERNAL
-    : process.env.DATABASE_URL_EXTERNAL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
+    : process.env.DATABASE_URL || process.env.DATABASE_URL_EXTERNAL,
+  ssl: { rejectUnauthorized: false },
 });
 
 const PORT = process.env.PORT || 3001;
