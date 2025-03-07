@@ -6,6 +6,10 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import { pool } from "./setup/initPool.js";
+
+import morganMiddleware from "./morganMiddleware.js";
+import logger from "./logger.js";
 
 import { initCourses } from "./setup/initCourses.js";
 import { createUsersTable } from "./setup/initUsersTable.js";
@@ -33,6 +37,9 @@ app.use(express.static(path.resolve(__dirname, "../client/dist")));
 // allow json stuff
 app.use(express.json());
 
+// morgan stuff
+app.use(morganMiddleware);
+
 // configure cors
 const corsOptions = {
   origin: process.env.FRONTEND_URL,
@@ -54,6 +61,7 @@ app.use(
 );
 
 app.post("/api/login", async (req, res) => {
+  logger.info("login accessed");
   const { email, password } = req.body;
   // Function to find user by email
   async function findUserByEmail(email) {
@@ -110,6 +118,7 @@ app.post("/api/login", async (req, res) => {
 });
 
 app.post("/api/signup", async (req, res) => {
+  logger.info("signup accessed");
   const { email, password, username, firstName, lastName, phone, address } =
     req.body;
   // phone and address are optional
