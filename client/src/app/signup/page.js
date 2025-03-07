@@ -50,7 +50,9 @@ export default function SignUpPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
       <div className="bg-white shadow-md rounded p-6 max-w-md w-full">
-        <h1 className="text-2xl font-bold mb-4 text-center">Sign Up</h1>
+        <h1 className="text-2xl text-black font-bold mb-4 text-center">
+          Sign Up
+        </h1>
         {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
@@ -59,7 +61,7 @@ export default function SignUpPage() {
             </label>
             <input
               type="email"
-              className="w-full border rounded px-3 py-2"
+              className="w-full border rounded px-3 py-2 text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -72,7 +74,7 @@ export default function SignUpPage() {
             </label>
             <input
               type="password"
-              className="w-full border rounded px-3 py-2"
+              className="w-full border rounded px-3 py-2 text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -85,7 +87,7 @@ export default function SignUpPage() {
             </label>
             <input
               type="text"
-              className="w-full border rounded px-3 py-2"
+              className="w-full border rounded px-3 py-2 text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
               required
@@ -98,7 +100,7 @@ export default function SignUpPage() {
             </label>
             <input
               type="text"
-              className="w-full border rounded px-3 py-2"
+              className="w-full border rounded px-3 py-2 text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
               required
@@ -111,7 +113,7 @@ export default function SignUpPage() {
             </label>
             <input
               type="tel"
-              className="w-full border rounded px-3 py-2"
+              className="w-full border rounded px-3 py-2 text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
             />
@@ -122,13 +124,13 @@ export default function SignUpPage() {
               Address
             </label>
             <textarea
-              className="w-full border rounded px-3 py-2"
+              className="w-full border rounded px-3 py-2 text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
             />
           </div>
 
-          <div className="text-xs text-gray-600 mb-4">
+          <div className="text-sm text-gray-600 mb-4">
             <span className="text-red-500">*</span> Required
           </div>
 
@@ -139,6 +141,7 @@ export default function SignUpPage() {
             Sign Up
           </button>
         </form>
+
         <div className="text-center mt-6 text-gray-600">
           Already have an account?{" "}
           <Link href="/login" className="text-blue-500 hover:underline">
