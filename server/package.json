@@ -20,8 +20,11 @@
     "express": "^4.21.2",
     "express-jwt": "^8.5.1",
     "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
     "path": "^0.12.7",
     "pg": "^8.13.3",
-    "pg-copy-streams": "^6.0.6"
+    "pg-copy-streams": "^6.0.6",
+    "rotating-file-stream": "^3.2.6",
+    "winston": "^3.17.0"
   }
 }
