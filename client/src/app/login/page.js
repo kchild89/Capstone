@@ -13,16 +13,10 @@ export default function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
     try {
       const input = { email, password };
       const res = await apiRouter.fetchPost("login", input);
-      // const res = await fetch(`${apiUrl}/api/login`, {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({ email, password }),
-      // });
 
       if (!res.ok) {
         const data = await res.json();
@@ -58,7 +52,7 @@ export default function LoginPage() {
             </label>
             <input
               type="email"
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full border border-gray-300 rounded px-3 py-2 text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -72,7 +66,7 @@ export default function LoginPage() {
             <div className="relative">
               <input
                 type="password"
-                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="w-full border border-gray-300 rounded px-3 py-2 text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -90,7 +84,7 @@ export default function LoginPage() {
         </form>
 
         <div className="text-center mt-6 text-gray-600">
-          Don&apos;t have an account?{" "}
+          Don't have an account?{" "}
           <Link href="/signup" className="text-blue-500 hover:underline">
             Sign Up
           </Link>
