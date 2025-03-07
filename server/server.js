@@ -1,102 +1,30 @@
 // server/server.js
+import express from "express";
+import path from "path";
+import { expressjwt } from "express-jwt";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+import cors from "cors";
+import cookieParser from "cookie-parser";
 
-const express = require("express");
-const path = require("path");
-const cors = require("cors");
-require("dotenv").config();
-const bcrypt = require("bcrypt");
-const { Pool } = require("pg");
-const jwt = require("jsonwebtoken");
-const { expressjwt: expressjwt } = require("express-jwt");
-const cookieParser = require("cookie-parser");
+import { initCourses } from "./setup/initCourses.js";
+import { createUsersTable } from "./setup/initUsersTable.js";
 
-const pool = new Pool({
-  connectionString: process.env.RENDER
-    ? process.env.DATABASE_URL_INTERNAL
-    : process.env.DATABASE_URL_EXTERNAL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
-});
+// Load environment variables
+import dotenv from "dotenv";
+dotenv.config();
 
-const PORT = process.env.PORT || 3001;
-
-const fs = require("fs");
-const { pipeline } = require("stream");
-const copyFrom = require("pg-copy-streams").from;
-
-// move these functions to different files
-async function copyCSVToDB() {
-  const client = await pool.connect();
-  try {
-    const result = await client.query(`
-      SELECT EXISTS (
-        SELECT 1
-        FROM information_schema.tables
-        WHERE table_name = 'courses'
-      );
-    `);
-    const tableExists = result.rows[0].exists;
-    if (!tableExists) {
-      // create courses table if it doesn't exist
-      await client.query(`
-      CREATE TABLE IF NOT EXISTS courses (
-        string_id VARCHAR PRIMARY KEY,
-        title VARCHAR,
-        description TEXT,
-        schedule VARCHAR,
-        classroom_number VARCHAR,
-        maximum_capacity INT,
-        credit_hours INT,
-        tuition_cost DECIMAL
-      );
-    `);
-      const query = `COPY courses(string_id, title, description, schedule, classroom_number, maximum_capacity, credit_hours, tuition_cost) 
-                   FROM STDIN WITH CSV HEADER`;
-
-      const stream = client.query(copyFrom(query));
-      const fileStream = fs.createReadStream("../courseData.csv");
-
-      pipeline(fileStream, stream, (err) => {
-        if (err) {
-          console.error("Error inserting CSV:", err);
-        } else {
-          console.log("CSV data inserted successfully!");
-        }
-        client.release();
-      });
-    } else {
-      console.log("courses table already exists");
-    }
-  } catch (error) {
-    console.error("Error inserting CSV:", error);
-    client.release();
-  }
-}
-copyCSVToDB();
-async function createUsersTable() {
-  const usersTableQuery = `
-      CREATE TABLE IF NOT EXISTS users (
-          id SERIAL PRIMARY KEY,
-          username VARCHAR(50) NOT NULL,
-          email VARCHAR(100) UNIQUE NOT NULL,
-          password TEXT NOT NULL,
-          firstName VARCHAR(50) NOT NULL,
-          lastName VARCHAR(50) NOT NULL,
-          phone VARCHAR(20),
-          address TEXT
-      );
-  `;
-
-  try {
-    await pool.query(usersTableQuery);
-    console.log("Users table ensured.");
-  } catch (err) {
-    console.error("Error creating users table:", err);
-  }
-}
+// make sure courses exist and users table exists
+initCourses();
 createUsersTable();
 
+// define __dirname
+import { dirname } from "path";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const PORT = process.env.PORT || 3001;
 const app = express();
 
 // Have Node serve the files for our built React app
@@ -125,18 +53,8 @@ app.use(
   }).unless({ path: ["/api/login", "/api/signup"] })
 );
 
-// Handle GET requests to /api route
-app.get("/api", (req, res) => {
-  res.json({ message: "Hello from server!" });
-});
-
-app.get("/", (req, res) => {
-  res.json({ message: "test test test test" });
-});
-
 app.post("/api/login", async (req, res) => {
   const { email, password } = req.body;
-
   // Function to find user by email
   async function findUserByEmail(email) {
     try {
@@ -271,17 +189,6 @@ app.post("/api/signup", async (req, res) => {
   res.json({
     message: "user created probably",
   });
-});
-
-// Test DB Connection
-app.get("/api/protected/test-db", async (req, res) => {
-  try {
-    const result = await pool.query("SELECT NOW()");
-    res.json({ message: "Connected to DB!", time: result.rows[0].now });
-  } catch (error) {
-    console.error("DB Connection Error:", error);
-    res.status(500).json({ error: "Database connection failed" });
-  }
 });
 
 app.listen(PORT, () => {
