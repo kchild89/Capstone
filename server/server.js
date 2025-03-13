@@ -57,8 +57,17 @@ app.use(
     secret: process.env.JWT_SECRET,
     algorithms: ["HS256"],
     getToken: (req) => req.cookies.token,
-  }).unless({ path: ["/api/login", "/api/signup"] })
+  }).unless({ path: ["/api/login", "/api/signup", "/api/client-logs"] })
 );
+
+app.post("/api/client-logs", (req, res) => {
+  const { level, message } = req.body;
+  if (!level || !message) {
+    return res.status(400).json({ error: "Missing log data" });
+  }
+  logger.log(level, `CLIENT: ${message}`);
+  res.status(200).json({ success: true });
+});
 
 app.post("/api/login", async (req, res) => {
   logger.info("login accessed");
