@@ -18,11 +18,11 @@ import { createUsersTable } from "./setup/initUsersTable.js";
 import dotenv from "dotenv";
 dotenv.config();
 
-// make sure courses exist and users table exists
+// Ensure courses exist and users table exists
 initCourses();
 createUsersTable();
 
-// define __dirname
+// Define __dirname
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
@@ -31,27 +31,26 @@ const __dirname = dirname(__filename);
 const PORT = process.env.PORT || 3001;
 const app = express();
 
-// Have Node serve the files for our built React app
+// Serve frontend
 app.use(express.static(path.resolve(__dirname, "../client/dist")));
 
-// allow json stuff
+// Enable JSON parsing
 app.use(express.json());
 
-// morgan stuff
+// Morgan middleware for logging
 app.use(morganMiddleware);
 
-// configure cors
+// Configure CORS
 const corsOptions = {
   origin: process.env.FRONTEND_URL,
   credentials: true,
 };
-// allow cross origin resource sharing
 app.use(cors(corsOptions));
 
-// allow reading cookies
+// Enable cookie parsing
 app.use(cookieParser());
 
-// verify jwts on all pages except whitelisted ones
+// JWT Middleware: Protect routes except for whitelisted ones
 app.use(
   expressjwt({
     secret: process.env.JWT_SECRET,
@@ -60,6 +59,7 @@ app.use(
   }).unless({ path: ["/api/login", "/api/signup", "/api/client-logs"] })
 );
 
+// Client logs endpoint
 app.post("/api/client-logs", (req, res) => {
   const { level, message } = req.body;
   if (!level || !message) {
@@ -69,82 +69,70 @@ app.post("/api/client-logs", (req, res) => {
   res.status(200).json({ success: true });
 });
 
+// Login route
 app.post("/api/login", async (req, res) => {
   logger.info("login accessed");
   const { email, password } = req.body;
-  // Function to find user by email
+
   async function findUserByEmail(email) {
     try {
       const result = await pool.query("SELECT * FROM users WHERE email = $1", [
         email,
       ]);
-      return result.rows[0]; // Return the user object
+      return result.rows[0];
     } catch (err) {
       console.error("Error fetching user from database", err);
       return null;
     }
   }
 
-  // Find user from database using email
   let user = await findUserByEmail(email);
-
-  // If user doesn't exist, return message saying so
   if (!user) {
-    console.log("user not found");
-    res.json({ message: "user not found" });
-    return;
+    return res.status(404).json({ message: "User not found" });
   }
 
-  // Compare passwords using bcrypt (for both new and existing users)
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
     return res.status(400).json({ message: "Invalid credentials" });
   }
 
-  // Generate JWT token
-  const payload = {
-    userId: user.id, // or whatever your user identifier is
-    email: user.email, // Use email instead of username
-  };
+  const token = jwt.sign(
+    { userId: user.id, email: user.email },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: "1h",
+      algorithm: "HS256",
+    }
+  );
 
-  const token = jwt.sign(payload, process.env.JWT_SECRET, {
-    expiresIn: "1h",
-    algorithm: "HS256",
-  }); // Token expires in 1 hour
-
-  // Send the token to the client
   res.cookie("token", token, {
-    httpOnly: true, // Prevents JavaScript access
-    secure: true, // Only send over HTTPS
-    sameSite: "Strict", // Prevent CSRF (can be 'Lax' or 'None' for cross-site)
-    maxAge: 24 * 60 * 60 * 1000, // 1 day
+    httpOnly: true,
+    secure: true,
+    sameSite: "Strict",
+    maxAge: 24 * 60 * 60 * 1000,
   });
 
-  console.log("successful login");
-  res.json({
-    message: "Login successful",
-  });
+  res.json({ message: "Login successful" });
 });
 
+// Signup route
 app.post("/api/signup", async (req, res) => {
   logger.info("signup accessed");
   const { email, password, username, firstName, lastName, phone, address } =
     req.body;
-  // phone and address are optional
-  // Function to find user by email
+
   async function findUserByEmail(email) {
     try {
       const result = await pool.query("SELECT * FROM users WHERE email = $1", [
         email,
       ]);
-      return result.rows[0]; // Return the user object
+      return result.rows[0];
     } catch (err) {
       console.error("Error fetching user from database", err);
       return null;
     }
   }
 
-  // Function to create a new user (only email and password are required)
   async function createUser(
     email,
     password,
@@ -157,9 +145,9 @@ app.post("/api/signup", async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const query = `
-    INSERT INTO users (email, password, username, firstName, lastName, phone, address)
-    VALUES ($1, $2, $3, $4, $5, $6, $7)
-    RETURNING *;
+      INSERT INTO users (email, password, username, firstName, lastName, phone, address)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      RETURNING *;
     `;
     try {
       const result = await pool.query(query, [
@@ -171,7 +159,6 @@ app.post("/api/signup", async (req, res) => {
         phone,
         address,
       ]);
-      console.log("User created:", result.rows[0]);
       return result.rows[0];
     } catch (err) {
       console.error("Error creating user:", err);
@@ -179,11 +166,8 @@ app.post("/api/signup", async (req, res) => {
     }
   }
 
-  // Find user from database using email
   let user = await findUserByEmail(email);
-  // If user doesn't exist, create the user
   if (!user) {
-    console.log("creating new user");
     user = await createUser(
       email,
       password,
@@ -194,20 +178,48 @@ app.post("/api/signup", async (req, res) => {
       address
     );
   } else {
-    console.log("user already exists");
-    res.status(409).json({ message: "user with this email already exists" });
-    return;
+    return res
+      .status(409)
+      .json({ message: "User with this email already exists" });
   }
 
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) {
-    return res.status(400).json({ message: "Invalid credentials" });
-  }
-
-  res.json({
-    message: "user created probably",
-  });
+  res.json({ message: "User created successfully" });
 });
+
+/* ========== New Course Routes ========== */
+
+// Get all courses
+app.get("/api/courses", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM courses");
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Error fetching courses:", error);
+    res.status(500).json({ error: "Failed to fetch courses" });
+  }
+});
+
+// Enroll in a course (JWT Protected)
+app.post("/api/enroll", async (req, res) => {
+  const { userId, courseId } = req.body;
+
+  if (!userId || !courseId) {
+    return res.status(400).json({ error: "Missing userId or courseId" });
+  }
+
+  try {
+    await pool.query(
+      "INSERT INTO enrollments (user_id, course_id) VALUES ($1, $2)",
+      [userId, courseId]
+    );
+    res.json({ message: "Successfully enrolled in the course!" });
+  } catch (error) {
+    console.error("Error enrolling:", error);
+    res.status(500).json({ error: "Enrollment failed" });
+  }
+});
+
+/* ========== End of New Routes ========== */
 
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
