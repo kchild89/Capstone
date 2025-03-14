@@ -50,7 +50,7 @@ class ApiRouter {
     return await this.fetchRequest("GET", path, null);
   };
 
-  fetchGetAuth = async (path, token) => {
+  fetchGetAuth = async (path) => {
     return await this.fetchRequest("GET", path, null, true);
   };
 }
