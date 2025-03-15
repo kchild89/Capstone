@@ -56,7 +56,9 @@ app.use(
     secret: process.env.JWT_SECRET,
     algorithms: ["HS256"],
     getToken: (req) => req.cookies.token,
-  }).unless({ path: ["/api/login", "/api/signup", "/api/client-logs"] })
+  }).unless({
+    path: ["/api/login", "/api/signup", "/api/client-logs", "/api/courses"],
+  }) // Temporary: Allow access to client logs and courses without JWT
 );
 
 // Client logs endpoint
