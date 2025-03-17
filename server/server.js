@@ -41,9 +41,16 @@ app.use(express.json());
 app.use(morganMiddleware);
 
 // Configure CORS
+// const corsOptions = {
+//   origin: process.env.FRONTEND_URL,
+//   credentials: true,
+// };
+// app.use(cors(corsOptions));
+
+// testing delete this later and use the one above
 const corsOptions = {
-  origin: process.env.FRONTEND_URL,
-  credentials: true,
+  origin: "http://localhost:3000", // Allow requests from frontend
+  credentials: true, // Allow cookies/auth headers
 };
 app.use(cors(corsOptions));
 
