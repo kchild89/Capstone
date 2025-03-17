@@ -4,8 +4,12 @@ class ApiRouter {
     try {
       const serverUrl =
         process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+
+      // Added for debugging purposes
+      console.log("API Router is using serverUrl:", serverUrl);
+
       const credentialType = token ? "include" : "omit";
-      
+
       const response = await fetch(`${serverUrl}/api/${path}`, {
         method,
         credentials: credentialType,
