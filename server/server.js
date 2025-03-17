@@ -8,7 +8,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import { pool } from "./setup/initPool.js";
 
-import morganMiddleware from "./morganMiddleware.js";
+import { morganMiddleware, morganErrorMiddleware } from "./morganMiddleware.js";
 import logger from "./logger.js";
 
 import { initCourses } from "./setup/initCourses.js";
@@ -39,6 +39,7 @@ app.use(express.json());
 
 // Morgan middleware for logging
 app.use(morganMiddleware);
+app.use(morganErrorMiddleware);
 
 // Configure CORS
 // const corsOptions = {
