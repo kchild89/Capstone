@@ -3,11 +3,29 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { apiRouter } from "@/utils/apiRouter";
+import { useRouter } from "next/navigation";
+import validateToken from "@/utils/validateToken";
 
 export default function DashboardPage() {
+  const [authorized, setAuthorized] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
   const [userData, setUserData] = useState(null);
   const [courses, setCourses] = useState([]);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    async function auth() {
+      const valid = await validateToken();
+      if (!valid) {
+        router.push("/login");
+      } else {
+        setAuthorized(true);
+      }
+      setLoading(false);
+    }
+    auth();
+  }, [router]);
 
   useEffect(() => {
     // Simulate fetching user data (replace with actual API call)
@@ -26,6 +44,14 @@ export default function DashboardPage() {
     };
     fetchCourses();
   }, []);
+
+  if (loading) {
+    return <div>loading...</div>;
+  }
+
+  if (!authorized) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
