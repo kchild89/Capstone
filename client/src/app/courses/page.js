@@ -50,7 +50,7 @@ export default function CoursesPage() {
             href="/"
             className="text-2xl font-bold text-blue-600 dark:text-blue-400"
           >
-            SchoolName
+            Isaac Tech
           </Link>
           <nav>
             <ul className="flex space-x-4">
@@ -83,7 +83,7 @@ export default function CoursesPage() {
       <section className="bg-blue-600 dark:bg-blue-500 py-20">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-white">
-            Welcome to SchoolName
+            Welcome to Isaac Tech
           </h1>
           <p className="mt-4 text-lg text-gray-200">
             Empowering students with knowledge and skills for a brighter future.
