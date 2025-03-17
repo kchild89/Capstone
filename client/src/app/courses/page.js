@@ -3,11 +3,13 @@
 import { useEffect, useState } from "react";
 import { apiRouter } from "@/utils/apiRouter";
 import Link from "next/link";
+import validateToken from "@/utils/validateToken";
 
 export default function CoursesPage() {
   const [courses, setCourses] = useState([]);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [authorized, setAuthorized] = useState(false);
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -22,6 +24,16 @@ export default function CoursesPage() {
       }
     };
     fetchCourses();
+  }, []);
+
+  useEffect(() => {
+    async function auth() {
+      const valid = await validateToken();
+      if (valid) {
+        setAuthorized(true);
+      }
+    }
+    auth();
   }, []);
 
   const handleEnroll = async (courseId) => {
@@ -119,12 +131,21 @@ export default function CoursesPage() {
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
                 Schedule: {course.schedule}
               </p>
-              <button
-                onClick={() => handleEnroll(course.string_id)}
-                className="w-full py-2 bg-blue-600 dark:bg-blue-500 text-white rounded hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors duration-200"
-              >
-                Enroll Now
-              </button>
+              {authorized ? (
+                <button
+                  onClick={() => handleEnroll(course.string_id)}
+                  className="w-full py-2 bg-blue-600 dark:bg-blue-500 text-white rounded hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors duration-200"
+                >
+                  Enroll Now
+                </button>
+              ) : (
+                <button
+                  disabled={true}
+                  className="bg-gray-500 w-full py-2 text-white rounded"
+                >
+                  Sign In to Enroll
+                </button>
+              )}
             </div>
           ))}
         </div>
