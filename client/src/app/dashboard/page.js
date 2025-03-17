@@ -1,17 +1,133 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { apiRouter } from "@/utils/apiRouter";
 
-export default function Dashboard() {
-  const router = useRouter();
+export default function DashboardPage() {
+  const [userData, setUserData] = useState(null);
+  const [courses, setCourses] = useState([]);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    // Simulate fetching user data (replace with actual API call)
+    setUserData({ name: "John Doe", email: "john@example.com" });
+
+    const fetchCourses = async () => {
+      try {
+        const res = await apiRouter.fetchGet("courses");
+        if (!res.ok) throw new Error("Failed to load courses");
+        const data = await res.json();
+        setCourses(data);
+      } catch (err) {
+        setError("Error fetching courses");
+        console.error(err);
+      }
+    };
+    fetchCourses();
+  }, []);
+
   return (
-    <div>
-      <h1>test</h1>
-      <button
-        onClick={() => {
-          router.push("/userSettings");
-        }}
-      >go to user settings</button>
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+      {/* Header */}
+      <header className="bg-white dark:bg-gray-800 shadow">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <Link
+            href="/"
+            className="text-2xl font-bold text-blue-600 dark:text-blue-400"
+          >
+            Isaac Tech
+          </Link>
+          <nav>
+            <ul className="flex space-x-4">
+              <li>
+                <Link href="/dashboard" className="hover:underline">
+                  Dashboard
+                </Link>
+              </li>
+              <li>
+                <Link href="/courses" className="hover:underline">
+                  Courses
+                </Link>
+              </li>
+              <li>
+                <Link href="/profile" className="hover:underline">
+                  Profile
+                </Link>
+              </li>
+              <li>
+                <Link href="/logout" className="hover:underline">
+                  Logout
+                </Link>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <section className="bg-blue-600 dark:bg-blue-500 py-16">
+        <div className="container mx-auto px-4 text-center">
+          <h1 className="text-4xl md:text-5xl font-bold text-white">
+            Welcome, {userData ? userData.name : "User"}
+          </h1>
+          <p className="mt-4 text-lg text-gray-200">
+            Here&apos;s an overview of your learning progress.
+          </p>
+        </div>
+      </section>
+
+      {/* Dashboard Content */}
+      <main className="container mx-auto px-4 py-10">
+        {error && <p className="text-center text-red-500 mb-4">{error}</p>}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Enrolled Courses Card */}
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+            <h2 className="text-xl font-semibold mb-2">Enrolled Courses</h2>
+            {courses.length > 0 ? (
+              <ul className="list-disc pl-5">
+                {courses.slice(0, 5).map((course) => (
+                  <li key={course.string_id} className="mb-1">
+                    {course.title}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No courses enrolled yet.</p>
+            )}
+            <Link
+              href="/courses"
+              className="mt-4 inline-block text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              View All Courses
+            </Link>
+          </div>
+
+          {/* Progress Stats Card */}
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+            <h2 className="text-xl font-semibold mb-2">Your Progress</h2>
+            <p className="text-gray-700 dark:text-gray-300">
+              Total Courses: {courses.length}
+            </p>
+            <p className="text-gray-700 dark:text-gray-300">
+              Upcoming Course: {courses.length > 0 ? courses[0].title : "N/A"}
+            </p>
+            <Link
+              href="/profile"
+              className="mt-4 inline-block text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              View Profile
+            </Link>
+          </div>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-white dark:bg-gray-800 py-4 mt-10">
+        <div className="container mx-auto px-4 text-center text-gray-600 dark:text-gray-400">
+          &copy; {new Date().getFullYear()} Isaac Tech. All rights reserved.
+        </div>
+      </footer>
     </div>
   );
 }
