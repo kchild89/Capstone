@@ -62,7 +62,7 @@ export default function CoursesPage() {
             href="/"
             className="text-2xl font-bold text-blue-600 dark:text-blue-400"
           >
-            Isaac Tech
+            404 Academy
           </Link>
           <nav>
             <ul className="flex space-x-4">
@@ -95,7 +95,7 @@ export default function CoursesPage() {
       <section className="bg-blue-600 dark:bg-blue-500 py-20">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-white">
-            Welcome to Isaac Tech
+            Welcome to 404 Academy
           </h1>
           <p className="mt-4 text-lg text-gray-200">
             Empowering students with knowledge and skills for a brighter future.
@@ -154,7 +154,7 @@ export default function CoursesPage() {
       {/* Footer */}
       <footer className="bg-white dark:bg-gray-800 py-4 mt-10">
         <div className="container mx-auto px-4 text-center text-gray-600 dark:text-gray-400">
-          &copy; {new Date().getFullYear()} SchoolName. All rights reserved.
+          &copy; {new Date().getFullYear()} 404 Academy All rights reserved.
         </div>
       </footer>
     </div>

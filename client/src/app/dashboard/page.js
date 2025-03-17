@@ -62,7 +62,7 @@ export default function DashboardPage() {
             href="/"
             className="text-2xl font-bold text-blue-600 dark:text-blue-400"
           >
-            Isaac Tech
+            404 Academy
           </Link>
           <nav>
             <ul className="flex space-x-4">
@@ -151,7 +151,7 @@ export default function DashboardPage() {
       {/* Footer */}
       <footer className="bg-white dark:bg-gray-800 py-4 mt-10">
         <div className="container mx-auto px-4 text-center text-gray-600 dark:text-gray-400">
-          &copy; {new Date().getFullYear()} Isaac Tech. All rights reserved.
+          &copy; {new Date().getFullYear()} 404 Academy All rights reserved.
         </div>
       </footer>
     </div>
