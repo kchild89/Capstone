@@ -62,6 +62,7 @@ app.use(
 );
 
 // Client logs endpoint
+// maybe add some checks to ensure malicious stuff can't be manually logged
 app.post("/api/client-logs", (req, res) => {
   const { level, message } = req.body;
   if (!level || !message) {
@@ -69,6 +70,11 @@ app.post("/api/client-logs", (req, res) => {
   }
   logger.log(level, `CLIENT: ${message}`);
   res.status(200).json({ success: true });
+});
+
+app.get("/api/validateJwt", (req, res) => {
+  // so long as it returns something and the whitelist doesn't contain this endpoint, it should only return if valid jwt
+  res.json({});
 });
 
 // Login route
