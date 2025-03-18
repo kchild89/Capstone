@@ -41,7 +41,7 @@ export default function CoursesPage() {
     setError("");
 
     try {
-      const userId = 1; // Replace with actual logged-in user ID
+      const userId = await validateToken();
       const res = await apiRouter.fetchPost("enroll", { userId, courseId });
       if (!res.ok) {
         throw new Error("Enrollment failed");
