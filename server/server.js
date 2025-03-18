@@ -81,8 +81,14 @@ app.post("/api/client-logs", (req, res) => {
 });
 
 app.get("/api/validateJwt", (req, res) => {
-  // so long as it returns something and the whitelist doesn't contain this endpoint, it should only return if valid jwt
-  res.json({});
+  const token = req.cookies.token;
+  const data = jwt.decode(token);
+  const userId = data.userId;
+  if (typeof userId === "number") {
+    res.json({ userId: userId });
+  } else {
+    res.json({});
+  }
 });
 
 // Login route
@@ -112,14 +118,10 @@ app.post("/api/login", async (req, res) => {
     return res.status(400).json({ message: "Invalid credentials" });
   }
 
-  const token = jwt.sign(
-    { userId: user.id, email: user.email },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: "1h",
-      algorithm: "HS256",
-    }
-  );
+  const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
+    expiresIn: "1h",
+    algorithm: "HS256",
+  });
 
   res.cookie("token", token, {
     httpOnly: true,
@@ -225,8 +227,13 @@ app.post("/api/enroll", async (req, res) => {
 
   try {
     await pool.query(
-      "INSERT INTO enrollments (user_id, course_id) VALUES ($1, $2)",
-      [userId, courseId]
+      `UPDATE users 
+       SET courses = CASE 
+         WHEN NOT ($1 = ANY(courses)) THEN ARRAY_APPEND(courses, $1) 
+         ELSE courses 
+       END 
+       WHERE id = $2`,
+      [courseId, userId]
     );
     res.json({ message: "Successfully enrolled in the course!" });
   } catch (error) {
