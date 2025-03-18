@@ -10,7 +10,8 @@ export async function createUsersTable() {
           firstName VARCHAR(50) NOT NULL,
           lastName VARCHAR(50) NOT NULL,
           phone VARCHAR(20),
-          address TEXT
+          address TEXT,
+          courses TEXT[]
       );
   `;
 
