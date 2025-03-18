@@ -11,7 +11,7 @@ export async function createUsersTable() {
           lastName VARCHAR(50) NOT NULL,
           phone VARCHAR(20),
           address TEXT,
-          courses TEXT[]
+          courses TEXT[] DEFAULT '{}'::TEXT[]
       );
   `;
 
