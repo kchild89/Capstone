@@ -5,5 +5,6 @@ export default async function validateToken() {
   if (res.status === 401 || !res.ok) {
     return false;
   }
-  return true; // return true if it worked/wasn't denied
+  // return userId
+  return await res.json();
 }
