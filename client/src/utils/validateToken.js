@@ -5,6 +5,7 @@ export default async function validateToken() {
   if (res.status === 401 || !res.ok) {
     return false;
   }
-  // return userId
-  return await res.json();
+
+  const { userId } = await res.json();
+  return userId;
 }
