@@ -71,6 +71,15 @@ export default function CoursesPage() {
                   Home
                 </Link>
               </li>
+              {authorized ? (
+                <li>
+                  <Link href="/dashboard" className="hover:underline">
+                    Dashboard
+                  </Link>
+                </li>
+              ) : (
+                <></>
+              )}
               <li>
                 <Link href="/about" className="hover:underline">
                   About
