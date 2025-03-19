@@ -40,7 +40,6 @@ export default function DashboardPage() {
         setError("error getting user details");
         console.error(err);
       }
-      getUserDetails();
     };
     getUserDetails();
     const fetchCourses = async () => {
