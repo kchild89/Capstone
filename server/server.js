@@ -204,8 +204,6 @@ app.post("/api/signup", async (req, res) => {
   res.json({ message: "User created successfully" });
 });
 
-/* ========== New Course Routes ========== */
-
 // Get all courses
 app.get("/api/courses", async (req, res) => {
   try {
@@ -228,11 +226,8 @@ app.post("/api/enroll", async (req, res) => {
   try {
     await pool.query(
       `UPDATE users 
-       SET courses = CASE 
-         WHEN NOT ($1 = ANY(courses)) THEN ARRAY_APPEND(courses, $1) 
-         ELSE courses 
-       END 
-       WHERE id = $2`,
+       SET courses = ARRAY_APPEND(courses, $1) 
+       WHERE id = $2 AND NOT ($1 = ANY(courses))`,
       [courseId, userId]
     );
     res.json({ message: "Successfully enrolled in the course!" });
@@ -242,7 +237,25 @@ app.post("/api/enroll", async (req, res) => {
   }
 });
 
-/* ========== End of New Routes ========== */
+// gets user details (minus enrolled courses)
+app.get("/api/userDetails", async (req, res) => {
+  const token = req.cookies.token;
+  const { userId } = jwt.decode(token);
+  try {
+    const result = await pool.query(
+      `SELECT id, username, email, firstName, lastName, phone, address 
+      FROM users 
+      WHERE id = $1;`,
+      [userId]
+    );
+    const data = result.rows[0];
+    res.json(data);
+    return;
+  } catch (err) {
+    logger.error(err);
+  }
+  res.json({ message: "failed to get userDetails" });
+});
 
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
