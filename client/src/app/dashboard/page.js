@@ -44,12 +44,12 @@ export default function DashboardPage() {
     getUserDetails();
     const fetchCourses = async () => {
       try {
-        const res = await apiRouter.fetchGet("courses");
-        if (!res.ok) throw new Error("Failed to load courses");
+        const res = await apiRouter.fetchGetAuth("userCourses");
+        if (!res.ok) throw new Error("Failed to load user courses");
         const data = await res.json();
         setCourses(data);
       } catch (err) {
-        setError("Error fetching courses");
+        setError("Error fetching user courses");
         console.error(err);
       }
     };
