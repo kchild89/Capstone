@@ -245,7 +245,7 @@ app.get("/api/userDetails", async (req, res) => {
   const { userId } = jwt.decode(token);
   try {
     const result = await pool.query(
-      `SELECT id, username, email, firstName, lastName, phone, address 
+      `SELECT username, email, firstName, lastName, phone, address 
       FROM users 
       WHERE id = $1;`,
       [userId]
@@ -257,6 +257,34 @@ app.get("/api/userDetails", async (req, res) => {
     logger.error(err);
   }
   res.json({ message: "failed to get userDetails" });
+});
+
+// get courses (not list of course id's) of a user
+app.get("/api/userCourses", async (req, res) => {
+  const token = req.cookies.token;
+  const { userId } = jwt.decode(token);
+  try {
+    const result = await pool.query(
+      `SELECT courses
+      FROM users 
+      WHERE id = $1;`,
+      [userId]
+    );
+    const { courses } = result.rows[0];
+    const result2 = await pool.query(
+      `SELECT *
+      FROM courses
+      WHERE string_id = ANY($1::TEXT[]);`,
+      [courses]
+    );
+    const realCourses = result2.rows;
+
+    res.json(realCourses);
+    return;
+  } catch (err) {
+    logger.error(err);
+  }
+  res.json({ message: "failed to get userCourses" });
 });
 
 app.listen(PORT, () => {
