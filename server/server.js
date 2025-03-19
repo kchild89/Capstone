@@ -43,7 +43,7 @@ app.use(morganErrorMiddleware);
 
 // Configure CORS
 const corsOptions = {
-  origin: "http://localhost:3000", // Allow requests from frontend
+  origin: process.env.FRONTEND_URL || "http://localhost:3000", // Allow requests from frontend
   credentials: true, // Allow cookies/auth headers
 };
 app.use(cors(corsOptions));
