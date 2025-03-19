@@ -93,7 +93,7 @@ export default function SignUpPage() {
               </label>
               <input
                 type="email"
-                className="w-full border rounded px-3 py-2 text-black focus:ring-blue-400"
+                className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 text-white placeholder-gray-500 bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-400"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -106,7 +106,7 @@ export default function SignUpPage() {
               </label>
               <input
                 type="password"
-                className="w-full border rounded px-3 py-2 text-black focus:ring-blue-400"
+                className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 text-white placeholder-gray-500 bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-400"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -120,7 +120,7 @@ export default function SignUpPage() {
                 </label>
                 <input
                   type="text"
-                  className="w-full border rounded px-3 py-2 text-black focus:ring-blue-400"
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 text-white placeholder-gray-500 bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-400"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   required
@@ -132,7 +132,7 @@ export default function SignUpPage() {
                 </label>
                 <input
                   type="text"
-                  className="w-full border rounded px-3 py-2 text-black focus:ring-blue-400"
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 text-white placeholder-gray-500 bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-400"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   required
@@ -146,7 +146,7 @@ export default function SignUpPage() {
               </label>
               <input
                 type="tel"
-                className="w-full border rounded px-3 py-2 text-black focus:ring-blue-400"
+                className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 text-white placeholder-gray-500 bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-400"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
               />
@@ -157,7 +157,7 @@ export default function SignUpPage() {
                 Address
               </label>
               <textarea
-                className="w-full border rounded px-3 py-2 text-black focus:ring-blue-400"
+                className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 text-white placeholder-gray-500 bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-400"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 rows="2"
