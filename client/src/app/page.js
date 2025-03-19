@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <div className="flex flex-col min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
       {/* Header */}
       <header className="bg-white dark:bg-gray-800 shadow">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -40,6 +40,7 @@ export default function Home() {
           </nav>
         </div>
       </header>
+
       {/* Hero Section */}
       <section className="py-20 bg-blue-600 dark:bg-blue-500">
         <div className="container mx-auto px-4 text-center">
@@ -66,8 +67,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="container mx-auto px-4 py-10">
+      {/* Main Content (flex-grow to push footer down) */}
+      <main className="container mx-auto px-4 py-10 flex-grow">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
             <h2 className="text-xl font-semibold mb-2">Expert Instructors</h2>
@@ -88,12 +89,12 @@ export default function Home() {
             </p>
           </div>
         </div>
-      </section>
+      </main>
 
-      {/* Footer */}
-      <footer className="bg-white dark:bg-gray-800 py-4">
+      {/* Footer - Stays at Bottom */}
+      <footer className="bg-white dark:bg-gray-800 py-4 mt-auto">
         <div className="container mx-auto px-4 text-center text-gray-600 dark:text-gray-400">
-          &copy; {new Date().getFullYear()}404 Academy All rights reserved.
+          &copy; {new Date().getFullYear()} 404 Academy All rights reserved.
         </div>
       </footer>
     </div>
