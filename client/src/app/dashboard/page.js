@@ -10,7 +10,7 @@ export default function DashboardPage() {
   const [authorized, setAuthorized] = useState(false);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const [userData, setUserData] = useState(null);
+  const [userData, setUserData] = useState([]);
   const [courses, setCourses] = useState([]);
   const [error, setError] = useState("");
 
@@ -29,8 +29,20 @@ export default function DashboardPage() {
 
   useEffect(() => {
     // Simulate fetching user data (replace with actual API call)
-    setUserData({ name: "John Doe", email: "john@example.com" });
-
+    const getUserDetails = async () => {
+      try {
+        const res = await apiRouter.fetchGetAuth("userDetails");
+        const userDetails = await res.json();
+        const name = `${userDetails.firstname} ${userDetails.lastname}`;
+        const email = userDetails.email;
+        setUserData([name, email]);
+      } catch (err) {
+        setError("error getting user details");
+        console.error(err);
+      }
+      getUserDetails();
+    };
+    getUserDetails();
     const fetchCourses = async () => {
       try {
         const res = await apiRouter.fetchGet("courses");
@@ -95,7 +107,7 @@ export default function DashboardPage() {
       <section className="bg-blue-600 dark:bg-blue-500 py-16">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-white">
-            Welcome, {userData ? userData.name : "User"}
+            Welcome, {userData[0]}
           </h1>
           <p className="mt-4 text-lg text-gray-200">
             Here&apos;s an overview of your learning progress.
