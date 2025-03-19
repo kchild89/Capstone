@@ -57,6 +57,20 @@ export default function DashboardPage() {
     fetchCourses();
   }, []);
 
+  // **Logout function**
+  const handleLogout = async () => {
+    try {
+      const res = await apiRouter.fetchPost("logout"); // Call the logout API
+      if (res.ok) {
+        router.push("/login"); // Redirect to login after logout
+      } else {
+        console.error("Logout failed");
+      }
+    } catch (err) {
+      console.error("Error logging out:", err);
+    }
+  };
+
   if (loading) {
     return <div>loading...</div>;
   }
@@ -94,9 +108,12 @@ export default function DashboardPage() {
                 </Link>
               </li>
               <li>
-                <Link href="/logout" className="hover:underline">
+                <button
+                  onClick={handleLogout}
+                  className="hover:underline text-red-500"
+                >
                   Logout
-                </Link>
+                </button>
               </li>
             </ul>
           </nav>
