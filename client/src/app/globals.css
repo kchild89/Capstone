@@ -1,4 +1,6 @@
-@import "tailwindcss";
+/* @import "tailwindcss"; */
+@tailwind "tailwindcss/preflight";
+@tailwind utilities;
 
 @theme {
   --font-sans: var(--font-geist-sans);
