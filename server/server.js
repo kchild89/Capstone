@@ -42,13 +42,6 @@ app.use(morganMiddleware);
 app.use(morganErrorMiddleware);
 
 // Configure CORS
-// const corsOptions = {
-//   origin: process.env.FRONTEND_URL,
-//   credentials: true,
-// };
-// app.use(cors(corsOptions));
-
-// testing delete this later and use the one above
 const corsOptions = {
   origin: "http://localhost:3000", // Allow requests from frontend
   credentials: true, // Allow cookies/auth headers
@@ -66,11 +59,10 @@ app.use(
     getToken: (req) => req.cookies.token,
   }).unless({
     path: ["/api/login", "/api/signup", "/api/client-logs", "/api/courses"],
-  }) // Temporary: Allow access to client logs and courses without JWT
+  })
 );
 
 // Client logs endpoint
-// maybe add some checks to ensure malicious stuff can't be manually logged
 app.post("/api/client-logs", (req, res) => {
   const { level, message } = req.body;
   if (!level || !message) {
@@ -83,12 +75,22 @@ app.post("/api/client-logs", (req, res) => {
 app.get("/api/validateJwt", (req, res) => {
   const token = req.cookies.token;
   const data = jwt.decode(token);
-  const userId = data.userId;
+  const userId = data?.userId;
   if (typeof userId === "number") {
     res.json({ userId: userId });
   } else {
     res.json({});
   }
+});
+
+// **Logout Route - Clears the auth cookie**
+app.post("/api/logout", (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "Strict",
+  });
+  res.json({ message: "Logout successful" });
 });
 
 // Login route
