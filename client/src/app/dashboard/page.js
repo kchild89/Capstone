@@ -80,7 +80,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <div className="flex flex-col min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
       {/* Header */}
       <header className="bg-white dark:bg-gray-800 shadow">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -132,8 +132,8 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      {/* Dashboard Content */}
-      <main className="container mx-auto px-4 py-10">
+      {/* Dashboard Content - Apply flex-grow to push footer down */}
+      <main className="container mx-auto px-4 py-10 flex-grow">
         {error && <p className="text-center text-red-500 mb-4">{error}</p>}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Enrolled Courses Card */}
@@ -177,8 +177,8 @@ export default function DashboardPage() {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-white dark:bg-gray-800 py-4 mt-10">
+      {/* Footer - Stays at Bottom */}
+      <footer className="bg-white dark:bg-gray-800 py-4 mt-auto">
         <div className="container mx-auto px-4 text-center text-gray-600 dark:text-gray-400">
           &copy; {new Date().getFullYear()} 404 Academy All rights reserved.
         </div>
