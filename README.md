@@ -13,9 +13,8 @@ a full-stack student registration system
 - Next.js with React
 - Express.js server
 - authentication with bcrypt, passport and jwt
-- MongoDB or Postgres
+- Postgres
 - env vars for ports, urls and secrets
-- logging with morgan or winston
 
 ## Setup
 
